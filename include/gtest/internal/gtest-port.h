@@ -125,6 +125,7 @@
 //   GTEST_OS_HPUX     - HP-UX
 //   GTEST_OS_LINUX    - Linux
 //     GTEST_OS_LINUX_ANDROID - Google Android
+//     GTEST_OS_LINUX_EMSCRIPTEN - Emscripten
 //   GTEST_OS_MAC      - Mac OS X
 //     GTEST_OS_IOS    - iOS
 //   GTEST_OS_NACL     - Google Native Client (NaCl)
@@ -329,6 +330,8 @@
 # define GTEST_OS_LINUX 1
 # if defined __ANDROID__
 #  define GTEST_OS_LINUX_ANDROID 1
+# elif defined __EMSCRIPTEN__
+#  define GTEST_OS_LINUX_EMSCRIPTEN 1
 # endif
 #elif defined __MVS__
 # define GTEST_OS_ZOS 1
@@ -640,7 +643,7 @@ struct _RTL_CRITICAL_SECTION;
 //
 // To disable threading support in Google Test, add -DGTEST_HAS_PTHREAD=0
 // to your compiler flags.
-# define GTEST_HAS_PTHREAD (GTEST_OS_LINUX || GTEST_OS_MAC || GTEST_OS_HPUX \
+# define GTEST_HAS_PTHREAD ((GTEST_OS_LINUX && !GTEST_OS_LINUX_EMSCRIPTEN) || GTEST_OS_MAC || GTEST_OS_HPUX \
     || GTEST_OS_QNX || GTEST_OS_FREEBSD || GTEST_OS_NACL)
 #endif  // GTEST_HAS_PTHREAD
 
@@ -817,7 +820,7 @@ using ::std::tuple_size;
 // Google Test does not support death tests for VC 7.1 and earlier as
 // abort() in a VC 7.1 application compiled as GUI in debug config
 // pops up a dialog window that cannot be suppressed programmatically.
-#if (GTEST_OS_LINUX || GTEST_OS_CYGWIN || GTEST_OS_SOLARIS || \
+#if ((GTEST_OS_LINUX && !GTEST_OS_LINUX_EMSCRIPTEN) || GTEST_OS_CYGWIN || GTEST_OS_SOLARIS || \
      (GTEST_OS_MAC && !GTEST_OS_IOS) || \
      (GTEST_OS_WINDOWS_DESKTOP && _MSC_VER >= 1400) || \
      GTEST_OS_WINDOWS_MINGW || GTEST_OS_AIX || GTEST_OS_HPUX || \
